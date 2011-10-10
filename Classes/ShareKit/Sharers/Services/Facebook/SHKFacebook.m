@@ -27,6 +27,7 @@
 
 #import "SHKFacebook.h"
 #import "SHKConfiguration.h"
+#import "SHKFacebookForm.h"
 
 static NSString *const kSHKStoredItemKey=@"kSHKStoredItem";
 static NSString *const kSHKFacebookAccessTokenKey=@"kSHKFacebookAccessToken";
@@ -43,7 +44,9 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 
 - (void)dealloc
 {
-	[super dealloc];
+    if ([SHKFacebook facebook].sessionDelegate == self)
+        [SHKFacebook facebook].sessionDelegate = nil;
+    [super dealloc];
 }
 
 + (Facebook*)facebook 
@@ -141,7 +144,8 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 
 - (BOOL)shouldAutoShare
 {
-	return YES;
+//	return YES;
+	return NO;
 }
 
 #pragma mark -
@@ -220,7 +224,12 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 	else if (item.shareType == SHKShareTypeText && item.text)
 	{
 		[params setObject:item.text forKey:@"message"];
-	}	
+        [[SHKFacebook facebook] requestWithGraphPath:@"me/feed"
+                                           andParams:params
+                                       andHttpMethod:@"POST"
+                                         andDelegate:self];
+        return YES;
+    }	
 	else if (item.shareType == SHKShareTypeImage && item.image)
 	{	
 		if (item.title) 
@@ -273,7 +282,9 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 
 - (void)dialog:(FBDialog *)dialog didFailWithError:(NSError *)error 
 {
-  [self sendDidFailWithError:error];
+//  [self sendDidFailWithError:error];
+    if (error.code != NSURLErrorCancelled)
+        [self sendDidFailWithError:error];
 }
 
 - (BOOL)dialog:(FBDialog*)dialog shouldOpenURLInExternalBrowser:(NSURL*)url
@@ -322,5 +333,43 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 {
 	[self sendDidFailWithError:error];
 }
+
+#pragma mark -
+#pragma mark UI Implementation
+
+- (void)show
+{
+    if (item.shareType == SHKShareTypeText)
+	{
+		[item setCustomValue:item.text forKey:@"status"];
+		[self showFacebookForm];
+	}
+    else
+    {
+        [self tryToSend];
+    }
+}
+
+- (void)showFacebookForm
+{
+	SHKFacebookForm *rootView = [[SHKFacebookForm alloc] initWithNibName:nil bundle:nil];	
+	rootView.delegate = self;
+	
+	// force view to load so we can set textView text
+	[rootView view];
+	
+	rootView.textView.text = [item customValueForKey:@"status"];
+	
+	[self pushViewController:rootView animated:NO];
+	
+	[[SHK currentHelper] showViewController:self];	
+}
+
+- (void)sendForm:(SHKFacebookForm *)form
+{	
+	[item setCustomValue:form.textView.text forKey:@"status"];
+	[self tryToSend];
+}
+
 
 @end
