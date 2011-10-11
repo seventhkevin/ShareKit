@@ -361,6 +361,7 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 	rootView.textView.text = [item customValueForKey:@"status"];
 	
 	[self pushViewController:rootView animated:NO];
+    [rootView release];
 	
 	[[SHK currentHelper] showViewController:self];	
 }

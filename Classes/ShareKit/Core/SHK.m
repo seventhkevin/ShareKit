@@ -190,8 +190,12 @@ BOOL SHKinit;
 			self.isDismissingView = YES;
 			[[currentView parentViewController] dismissModalViewControllerAnimated:animated];
 		}
-		
-		else
+        else if([currentView presentingViewController] != nil)
+        {
+            self.isDismissingView = YES;
+            [[currentView presentingViewController] dismissModalViewControllerAnimated:animated];
+        }
+        else
 			self.currentView = nil;
 	}
 }
@@ -363,7 +367,15 @@ BOOL SHKinit;
 	return [[NSUserDefaults standardUserDefaults] setObject:exclusions forKey:[NSString stringWithFormat:@"%@Exclusions", SHKCONFIG(favsPrefixKey)]];
 }
 
+#pragma mark -
++ (BOOL)isMoreButtonDisabled {
+    return [[[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%MoreButtonDisabled", SHK_FAVS_PREFIX_KEY]] boolValue];
+}
 
++ (void)setIsMoreButtonDisabled:(BOOL)yesNo {
+    return [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%i", yesNo] 
+                                                     forKey:[NSString stringWithFormat:@"%MoreButtonDisabled", SHK_FAVS_PREFIX_KEY]];  
+}
 
 #pragma mark -
 #pragma mark Credentials
@@ -517,9 +529,12 @@ static NSDictionary *sharersDictionary = nil;
 	{
 		SHK *helper = [self currentHelper];
 		
-		if (helper.offlineQueue == nil)
-			helper.offlineQueue = [[NSOperationQueue alloc] init];		
-	
+    if (helper.offlineQueue == nil) {
+        NSOperationQueue *aQueue = [[NSOperationQueue alloc] init];
+        helper.offlineQueue = aQueue;  
+        [aQueue release];
+    }
+
 		SHKItem *item;
 		NSString *sharerId, *uid;
 		
