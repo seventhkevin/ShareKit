@@ -15,7 +15,6 @@
 
 - (void)dealloc 
 {
-	[delegate release];
 	[textView release];
     [super dealloc];
 }

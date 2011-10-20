@@ -12,7 +12,7 @@
 	UITextView *textView;
 }
 
-@property (nonatomic, retain) id delegate;
+@property (nonatomic, assign) id delegate;
 @property (nonatomic, retain) UITextView *textView;
 
 - (void)save;

@@ -341,7 +341,6 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 {
     if (item.shareType == SHKShareTypeText)
 	{
-		[item setCustomValue:item.text forKey:@"status"];
 		[self showFacebookForm];
 	}
     else
@@ -358,7 +357,7 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 	// force view to load so we can set textView text
 	[rootView view];
 	
-	rootView.textView.text = [item customValueForKey:@"status"];
+	rootView.textView.text = item.text;
 	
 	[self pushViewController:rootView animated:NO];
     [rootView release];
@@ -368,7 +367,7 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 
 - (void)sendForm:(SHKFacebookForm *)form
 {	
-	[item setCustomValue:form.textView.text forKey:@"status"];
+    item.text = form.textView.text;
 	[self tryToSend];
 }
 
