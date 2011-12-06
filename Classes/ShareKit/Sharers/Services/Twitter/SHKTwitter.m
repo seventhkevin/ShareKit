@@ -30,6 +30,7 @@
 
 #import "SHKConfiguration.h"
 #import "SHKTwitter.h"
+#import "SHKiOS5Twitter.h"
 
 @implementation SHKTwitter
 
@@ -93,17 +94,52 @@
 	return NO;
 }
 
+#pragma mark -
+#pragma mark Commit Share
+
+- (void)share {
+    
+    if ([self twitterFrameworkAvailable]) {
+        
+        [SHKiOS5Twitter shareItem:self.item];
+        [SHKTwitter logout];//to clean credentials - we will not need them anymore
+        return;
+    }
+    [super share];
+}
+
+#pragma mark -
+
+- (BOOL)twitterFrameworkAvailable {
+    
+    BOOL result = NO;
+    
+    if (NSClassFromString(@"TWTweetComposeViewController")) {
+        result = YES;
+    }
+    
+    return result;
+}
 
 #pragma mark -
 #pragma mark Authorization
 
 - (BOOL)isAuthorized
 {		
+    if ([self twitterFrameworkAvailable]) {
+        [SHKTwitter logout];
+        return NO; 
+    }
 	return [self restoreAccessToken];
 }
 
 - (void)promptAuthorization
-{		
+{	
+    if ([self twitterFrameworkAvailable]) {
+        SHKLog(@"There is no need to authorize when we use iOS Twitter framework");
+        return;
+    }
+    
 	if (xAuth)
 		[super authorizationFormShow]; // xAuth process
 	
