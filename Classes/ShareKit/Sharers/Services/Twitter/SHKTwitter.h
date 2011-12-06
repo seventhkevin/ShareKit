@@ -59,6 +59,4 @@
 
 - (void)followMe;
 
-- (BOOL)twitterFrameworkAvailable;
-
 @end
