@@ -331,31 +331,7 @@ static NSString *const kSHKFacebookExpiryDateKey=@"kSHKFacebookExpiryDate";
 
 - (void)request:(FBRequest*)aRequest didFailWithError:(NSError*)error 
 {
-    BOOL errorHandled = NO;
-    NSDictionary * userInfo = [error userInfo];
-    if (userInfo != nil)
-    {
-        NSDictionary * errorDetail = [userInfo objectForKey:@"error"];
-        if (errorDetail != nil)
-        {
-            NSString * errorType = [errorDetail objectForKey:@"type"];
-            NSString * errorMsg = [errorDetail objectForKey:@"message"];
-            if (errorType && errorMsg)
-            {
-                if ([errorType isEqualToString:@"OAuthException"])
-                {
-                    NSRange r = [errorMsg rangeOfString:@"not authorized application"];
-                    if (r.location > 0)
-                    {
-                        errorHandled = YES;
-                        [self sendDidFailShouldRelogin];
-                    }
-                }
-            }
-        }
-    }
-    if (!errorHandled)
-        [self sendDidFailWithError:error];
+	[self sendDidFailWithError:error];
 }
 
 #pragma mark -
