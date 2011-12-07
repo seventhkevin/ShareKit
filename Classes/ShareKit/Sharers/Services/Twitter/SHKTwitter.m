@@ -53,9 +53,9 @@
 		
 		
 		// You do not need to edit these, they are the same for everyone
-	    self.authorizeURL = [NSURL URLWithString:@"https://twitter.com/oauth/authorize"];
-	    self.requestURL = [NSURL URLWithString:@"https://twitter.com/oauth/request_token"];
-	    self.accessURL = [NSURL URLWithString:@"https://twitter.com/oauth/access_token"]; 
+        self.authorizeURL = [NSURL URLWithString:@"https://api.twitter.com/oauth/authorize"];
+        self.requestURL = [NSURL URLWithString:@"https://api.twitter.com/oauth/request_token"];
+        self.accessURL = [NSURL URLWithString:@"https://api.twitter.com/oauth/access_token"]; 
 	}	
 	return self;
 }
@@ -353,7 +353,7 @@
 
 - (void)sendStatus
 {
-	OAMutableURLRequest *oRequest = [[OAMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://api.twitter.com/1/statuses/update.json"]
+	OAMutableURLRequest *oRequest = [[OAMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://api.twitter.com/1/statuses/update.json"]
 																	consumer:consumer
 																	   token:accessToken
 																	   realm:nil
@@ -430,7 +430,7 @@
 	
 	NSURL *serviceURL = nil;
 	if([item customValueForKey:@"profile_update"]){
-		serviceURL = [NSURL URLWithString:@"http://api.twitter.com/1/account/update_profile_image.json"];
+		serviceURL = [NSURL URLWithString:@"https://api.twitter.com/1/account/update_profile_image.json"];
 	} else {
 		serviceURL = [NSURL URLWithString:@"https://api.twitter.com/1/account/verify_credentials.json"];
 	}
@@ -438,7 +438,7 @@
 	OAMutableURLRequest *oRequest = [[OAMutableURLRequest alloc] initWithURL:serviceURL
 																	consumer:consumer
 																	   token:accessToken
-																	   realm:@"http://api.twitter.com/"
+																	   realm:@"https://api.twitter.com/"
 														   signatureProvider:signatureProvider];
 	[oRequest setHTTPMethod:@"GET"];
 	
@@ -563,7 +563,7 @@
 	// remove it so in case of other failures this doesn't get hit again
 	[item setCustomValue:nil forKey:@"followMe"];
 	
-	OAMutableURLRequest *oRequest = [[OAMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://api.twitter.com/1/friendships/create/%@.json", SHKCONFIG(twitterUsername)]]
+	OAMutableURLRequest *oRequest = [[OAMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://api.twitter.com/1/friendships/create/%@.json", SHKCONFIG(twitterUsername)]]
 																	consumer:consumer
 																	   token:accessToken
 																	   realm:nil
